@@ -1,173 +1,248 @@
-# Wallet Transfer Framework (WTF)
+# Wallet Translation Framework (WTF)
 
-The **Wallet Transfer Framework (WTF)** is a **Flutter SDK** built on the foundation of **Universal Transfer Operations (UTO)**. It simplifies blockchain payments and transfers by integrating **AI-driven natural language processing** with **cross-chain abstraction**, enabling developers to build intelligent, user-friendly wallets and applications. WTF aims to extend and complement **WalletConnect** by adding AI-driven natural language interfaces for enhanced wallet functionality.
-
----
-
-## Universal Transfer Operations (UTO): The Foundation of WTF
-
-The **Universal Transfer Operations (UTO)** define a standard interface for executing payment and transfer operations on any blockchain. UTO abstracts wallet interactions into a set of **basic operations**, enabling:
-
-1. **Cross-Chain Interoperability**: A unified abstraction layer compatible with all blockchain architectures.
-2. **AI-Driven Workflow**: Transforms natural language inputs into deterministic wallet operations for execution.
-3. **Developer Efficiency**: Simplifies wallet implementation and testing for diverse blockchain systems.
-
-### UTO Operations
-
-The following **basic operations** are defined by UTO and form the core of WTF's wallet interaction logic:
-
-| Operation              | Description                                                     |
-| ---------------------- | --------------------------------------------------------------- |
-| `create_transfer`      | Initializes a transfer request with required parameters.        |
-| `validate_transfer`    | Validates the transfer details (e.g., balances, compatibility). |
-| `get_transfer_options` | Provides route options (e.g., chains, tokens, fees, speed).     |
-| `execute_transfer`     | Executes the transfer using the chosen route and parameters.    |
-| `confirm_transfer`     | Confirms the transfer was successfully completed.               |
+The **Wallet Translation Framework (WTF)** is an innovative AI-driven platform that simplifies cryptocurrency transactions through natural language processing (NLP). By combining AI with Universal Transfer Operations (UTO) and seamless integration into blockchain wallets, WTF redefines how users interact with blockchain technology.
 
 ---
 
-## Features
+## Purpose of WTF
 
-- **AI Integration**: Works with Claude, OpenAI, and custom models to process natural language commands for transfers.
-- **Abstracted Transfer Operations**: Unified API to handle transfers across diverse blockchain ecosystems.
-- **Cross-Chain Compatibility**: Supports Sui, BTC, Solana, Kaspa, EVM-based blockchains, and TRON.
-- **Plug-and-Play AI**: Enhances existing WalletConnect sessions with natural language capabilities, requiring minimal integration effort.
+The primary goal of WTF is to provide a natural, user-friendly interface for managing blockchain-based transactions. The framework combines AI-driven processing with cross-chain stablecoin transfer capabilities to reduce complexity and increase accessibility for end-users and developers.
 
 ---
 
-## Installation
+## Why Combine WTF with LLM?
 
-To add WTF to your Flutter project, include the following dependency in your `pubspec.yaml` file:
+1. **Enhanced Usability**:
+   - Leverages AI-powered natural language processing (NLP) to convert casual language into actionable commands.
+   - Example: "Send 100 USDC to Alice" → `/transfer 100 USDC alice.eth Base`
 
-```yaml
-dependencies:
-  wtf_sdk: ^1.0.0
-```
+2. **Cross-Chain Interoperability**:
+   - Supports Base and Ethereum networks, enabling seamless transfers of stablecoins like USDC.
+   - Unified abstraction for multi-chain operations.
 
-Run `flutter pub get` to install the package.
+3. **Optimized Execution**:
+   - AI models provide intelligent suggestions for transaction routing, balancing speed, cost, and efficiency.
+
+4. **Developer Efficiency**:
+   - Reduces the complexity of integrating multi-chain functionalities into wallet applications.
 
 ---
 
-## Quick Start Guide
+## Importance of Universal Transfer Operations (UTO)
 
-### Step 1: Initialize the Framework
+UTO establishes a standardized interface for executing blockchain payment and transfer operations. This abstraction enhances cross-chain interoperability and simplifies integration across diverse blockchain systems.
 
+### Key Features:
+- **Cross-Chain Abstraction**: A unified layer compatible with multiple blockchain architectures.
+- **AI-Driven Workflow**: Transforms natural language inputs into structured wallet operations.
+- **Plug-and-Play Integration**: Simplifies wallet implementation for developers.
+
+### UTO Core Operations:
+| Operation            | Description                                                                 |
+|-----------------------|-----------------------------------------------------------------------------|
+| `create_transfer`     | Initializes a transfer request.                                             |
+| `validate_transfer`   | Verifies transfer details like balances and compatibility.                  |
+| `get_transfer_options`| Provides route options based on chains, tokens, and fees.                  |
+| `execute_transfer`    | Executes the transfer using the chosen route.                              |
+| `confirm_transfer`    | Confirms the successful completion of the transfer.                        |
+
+---
+
+## Implementations of WTF
+
+WTF is implemented through two main approaches: **Flutter** and **XMTP**.
+
+### 1. Flutter Implementation
+
+#### Overview:
+The Flutter implementation of WTF leverages the SDK to enable seamless integration into mobile applications, allowing developers to build intuitive interfaces for blockchain transactions. It implements the Universal Transfer Operations (UTO) standard for consistent cross-chain functionality.
+
+#### Key Features:
+- **Modular Design**: 
+  - Developers only need to implement essential UTO interfaces
+  - Standardized implementation patterns for blockchain operations
+  - Clean separation between UI, business logic, and blockchain operations
+
+- **Rapid Scalability**: 
+  - Supports Base and Ethereum networks out of the box
+  - Extensible architecture for adding new chains
+  - Unified interface for multi-chain operations
+
+- **Seamless AI Integration**: 
+  - Natural language processing for command interpretation
+  - Intelligent routing based on gas fees and network conditions
+  - Flexible prompt system for command processing
+
+#### Workflow:
+1. **Interface Definition**:
+   - Implements core UTO operations through standardized interfaces
+   - Provides type-safe request/response models
+   - Handles cross-chain compatibility
+
+2. **Implementation in Flutter**:
+   - Developers implement WalletOperations interface
+   - Support for both synchronous and asynchronous operations
+   - Built-in error handling and validation
+
+3. **AI Integration**:
+   - Converts natural language to structured commands
+   - Validates input parameters and chain compatibility
+   - Provides intelligent suggestions for optimal routes
+
+4. **Execution and Feedback**:
+   - Real-time transaction status updates
+   - Detailed error reporting
+   - Transaction confirmation handling
+
+#### Core Interface:
 ```dart
-import 'package:wtf_sdk/wtf_sdk.dart';
-
-void main() {
-  final wtf = WTF(
-    aiModel: OpenAIModel(apiKey: 'your-api-key'),
-    blockchain: Blockchain.multiChain, // Enables multi-chain compatibility
-  );
-
-  runApp(MyApp(wtf: wtf));
+abstract class WalletOperations {
+  // Initialize transfer request with validation
+  Future<TransactionResult> createTransfer(CreateTransferRequest request);
+  
+  // Execute the validated transfer
+  Future<TransactionResult> executeTransfer(TransferExecutionRequest request);
+  
+  // Get available transfer routes with fees
+  Future<List<TransferOption>> getTransferOptions(CreateTransferRequest request);
+  
+  // Confirm transaction completion
+  Future<ConfirmationResult> confirmTransfer(String transactionHash);
 }
 ```
 
-### Step 2: Create a Transfer Request
+#### Testing:
+Basic test setup requires:
 
-```dart
-final transferRequest = CreateTransferRequest(
-  senderAddress: "0xSenderAddress",
-  recipientAddress: "0xRecipientAddress",
-  amount: 100.0,
-  tokenSymbol: "USDT",
-);
+1. Environment configuration:
+```
+OPENAI_API_KEY=your_openai_api_key
 ```
 
-### Step 3: Get Transfer Options
-
-```dart
-final transferOptions = await wtf.walletOperations.getTransferOptions(transferRequest);
-
-for (final option in transferOptions) {
-  print("Route: ${option.route}, Fee: ${option.fee}, Estimated Time: ${option.estimatedTime}, Security: ${option.securityLevel}");
-}
-```
-
-**Example Output**:
-```json
-[
-  {
-    "route": "TRON-TRC20",
-    "fee": 0.2,
-    "estimatedTime": "2 seconds",
-    "securityLevel": "High",
-    "compatibility": "Full"
-  },
-  {
-    "route": "Ethereum-ERC20",
-    "fee": 5.0,
-    "estimatedTime": "30 seconds",
-    "securityLevel": "High",
-    "compatibility": "Partial"
-  }
-]
-```
-
-### Step 4: Execute the Transfer
-
-```dart
-final selectedOption = transferOptions.first; // Choose the best option
-final result = await wtf.walletOperations.broadcastTransfer(selectedOption);
-
-if (result.success) {
-  print("Transaction successful: ${result.transactionHash}");
-} else {
-  print("Transaction failed: ${result.errorMessage}");
-}
+2. Running tests:
+```bash
+flutter pub get
+flutter test test/basic/main_test.dart
 ```
 
 ---
 
-## Use Case: AI-Driven Transfers
+### 2. XMTP and MessageKit Implementation
 
-### Demo Flow
+#### Overview:
+This implementation uses the XMTP protocol for decentralized messaging combined with MessageKit to enable cross-chain stablecoin transfers via AI. The system processes natural language commands through a sophisticated prompt system and executes transfers via TxPay and KryptoGO integration.
 
-1. **Trigger Action**: Bob enters, "Send 100 USDT to Alice."
-2. **AI Interaction**: 
-   - AI parses the natural language input into a structured `create_transfer` operation.
-   - AI suggests optimized routes based on transaction speed and cost.
-3. **User Confirmation**: Bob selects TRON-TRC20 for its low fees and speed.
-4. **Execution**: WTF executes the transaction via TRONConnector, confirming success.
+#### Key Features:
+- **AI-Driven Messaging**:
+  - Utilizes NLP for processing transfer commands in decentralized messaging
+  - Implements a comprehensive prompt system for command interpretation
+  - Supports both direct commands and natural language inputs
+  
+- **Cross-Chain Support**:
+  - Facilitates USDC transfers on Ethereum (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)
+  - Supports Base network (0x833589fcd6edb6e08f4c7c32d4f71b54bda02913)
+  - Smart routing based on gas fees and confirmation times
+  
+- **User-Friendly Interface**:
+  - Supports ENS domain resolution for human-readable addresses
+  - Provides detailed transaction feedback including fees and confirmation times
+  - Handles both balance checks and transfers through unified commands
+
+#### Supported Commands:
+1. Balance Check:
+   ```
+   /balance [token] [chain]
+   Example: /balance USDC Base
+   ```
+
+2. Transfer:
+   ```
+   /transfer [amount] [token] [recipientAddress] [chain]
+   Example: /transfer 100 USDC alice.eth Base
+   ```
+
+#### Technical Implementation:
+1. **Message Processing**:
+   - Implements XMTP's MessageKit for handling user inputs
+   - Uses structured handler pattern for command processing
+   - Supports both direct commands and AI-interpreted natural language
+
+2. **Transaction Execution**:
+   - Integrates with TxPay for transaction execution
+   - Supports multiple chain configurations
+   - Implements automatic fee estimation and route optimization
+
+3. **Error Handling**:
+   - Validates chain support and token compatibility
+   - Verifies address formats and ENS resolution
+   - Provides clear error messages for failed operations
+
+#### Example Workflow:
+1. **User Input**:
+   - User sends a message: "Send 100 USDC to Alice"
+   
+2. **AI Processing**:
+   - System processes input through AI prompt system
+   - Converts natural language to structured command
+   - Validates parameters and chain support
+   
+3. **Transaction Execution**:
+   - Generates transaction URL with appropriate parameters
+   - Routes transaction through optimal chain based on fees
+   - Executes transfer via TxPay or KryptoGO integration
+   
+4. **Response Handling**:
+   - Provides transaction details and confirmation URL
+   - Shows estimated fees and processing time
+   - Offers alternative routes if available
 
 ---
 
-## Extensibility & Future Work
+## Extensibility and Future Directions
 
-1. **WalletConnect Extension**: Extend WTF as an official WalletConnect extension to natively support natural language operations across WalletConnect-compatible wallets.
-2. **Multilingual AI**: Expand support for additional languages to improve user accessibility globally.
-3. **Advanced Analytics**: Integrate predictive gas fee optimization and transaction batching for enhanced performance.
-4. **Cross-Chain Collaboration**: Strengthen compatibility with emerging blockchain architectures.
+WTF is designed with extensibility in mind, making it adaptable for future blockchain and AI advancements.
 
----
-
-## Why WTF?
-
-### Developer Benefits
-
-- Simplifies integration of AI-driven natural language processing into wallets.
-- Reduces complexity of handling multi-chain transactions.
-- Offers a future-ready solution for expanding WalletConnect capabilities.
-
-### User Benefits
-
-- Provides a conversational interface for seamless transaction execution.
-- Reduces decision fatigue with optimized route recommendations.
-- Supports interoperability across diverse blockchain networks.
+### Future Work:
+1. **WalletConnect Integration**:
+   - Extend WTF as an official WalletConnect extension.
+2. **Multilingual AI**:
+   - Support additional languages for a global audience.
+3. **Predictive Analytics**:
+   - Incorporate gas fee optimization and transaction forecasting.
+4. **Expanded Blockchain Support**:
+   - Strengthen compatibility with emerging blockchain architectures.
 
 ---
 
-## Contributing
+## Supported Networks
 
-Contributions are welcome! Please follow the [Contributing Guidelines](https://www.notion.so/kryptogo/CONTRIBUTING.md) and ensure all pull requests pass the CI pipeline.
+### Current Support:
+- **Base**: Low fees (~$0.1) and fast confirmation times.
+- **Ethereum**: Higher transaction costs with widespread adoption.
 
 ---
 
-## License
+## Development Setup
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.notion.so/kryptogo/LICENSE) file for details.
+### Requirements:
+- **Node.js**: Version 20 or higher.
+- **TypeScript**: For type safety.
+- **Bun**: As a package manager.
+- **ESM Modules**: For modular architecture.
+
+### How to Get Started:
+1. Clone the repository.
+2. Install dependencies using Bun:
+   ```bash
+   bun install
+   ```
+3. Run the project:
+   ```bash
+   bun start
+   ```
+
+---
+
 
 
 # How to run basic test
@@ -182,3 +257,10 @@ OPENAI_API_KEY=your_openai_api_key
 flutter pub get
 flutter test test/basic/main_test.dart
 ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](https://www.notion.so/kryptogo/LICENSE) file for details.
+
+## Made with ❤️ by
+[MessageKit](https://messagekit.ephemerahq.com), [XMTP](https://xmtp.org), and [Converse](https://converse.xyz/dm/wtfagent.converse.xyz).
