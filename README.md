@@ -174,6 +174,16 @@ flutter pub get
 flutter test test/basic/main_test.dart
 ```
 
+#### Demo Videos and Screenshots
+
+Here are screenshots demonstrating how WTF seamlessly integrates with Flutter for building intuitive blockchain wallet interfaces.
+
+<p float="left">
+  <img src="assets/flutter_demo.mp4" width="33%" />
+  <img src="assets/flutter_demo1.png" width="33%" />
+  <img src="assets/flutter_demo2.png" width="33%" />
+</p>
+
 ### 2. XMTP and MessageKit Implementation
 
 #### Overview:
@@ -284,6 +294,15 @@ This implementation uses the XMTP protocol for decentralized messaging combined 
    - Shows estimated fees and processing time
    - Offers alternative routes if available
 
+#### Demo Videos and Screenshots
+
+Here are screenshots demonstrating the MessageKit integration and user experience:
+
+<p float="left">
+  <img src="assets/messagekit_demo.mp4" width="33%" />
+  <img src="assets/messagekit_demo1.jpg" width="33%" />
+  <img src="assets/messagekit_demo2.jpg" width="33%" />
+</p>
 
 ### Development Setup
 
