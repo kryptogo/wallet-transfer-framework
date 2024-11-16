@@ -10,6 +10,8 @@ class CuteButton extends StatelessWidget {
     this.height = 48,
     this.isLoading = false,
     this.borderRadius = 12,
+    this.backgroundColor,
+    this.foregroundColor,
     this.padding = const EdgeInsets.symmetric(horizontal: 24),
   });
 
@@ -18,8 +20,8 @@ class CuteButton extends StatelessWidget {
   final IconData? icon;
   final double? width;
   final double height;
-  final Color backgroundColor = const Color.fromARGB(255, 215, 214, 209);
-  final Color foregroundColor = const Color.fromARGB(255, 22, 21, 46);
+  final Color? backgroundColor;
+  final Color? foregroundColor;
   final bool isLoading;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
@@ -37,7 +39,7 @@ class CuteButton extends StatelessWidget {
         textStyle: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: foregroundColor,
+          color: foregroundColor ?? const Color.fromARGB(255, 22, 21, 46),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
@@ -48,7 +50,8 @@ class CuteButton extends StatelessWidget {
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(foregroundColor ??
+                      const Color.fromARGB(255, 212, 192, 161)),
                 ),
               )
             : Row(
