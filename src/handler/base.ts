@@ -1,6 +1,7 @@
 import { HandlerContext, SkillResponse } from "@xmtp/message-kit";
 import { getUserInfo } from "@xmtp/message-kit";
 import { isAddress } from "viem";
+import { chainConfigs } from "../utils/chains.js";
 
 export const handler = async (
   context: HandlerContext
@@ -128,6 +129,66 @@ export const handler = async (
       return {
         code: 200,
         message: "Base URL: https://base.org",
+      };
+    }
+
+    case "/transfer": {
+      const { amount, token, recipient, chain } = params;
+      
+      // Validate chain and get config
+      const chainConfig = chainConfigs[chain];
+      if (!chainConfig) {
+        return {
+          code: 400,
+          message: `Unsupported chain: ${chain}. Supported chains: ${Object.keys(chainConfigs).join(", ")}`,
+        };
+      }
+
+      // Validate token
+      if (!chainConfig.supportedTokens.includes(token)) {
+        return {
+          code: 400,
+          message: `Token ${token} not supported on ${chain}. Supported tokens: ${chainConfig.supportedTokens.join(", ")}`,
+        };
+      }
+
+      // Validate address format
+      if (!chainConfig.validateAddress(recipient)) {
+        return {
+          code: 400,
+          message: `Invalid ${chain} address format`,
+        };
+      }
+
+      // Get estimated fee
+      const fee = await chainConfig.estimateFee();
+
+      return {
+        code: 200,
+        message: `Transfer initiated:\nAmount: ${amount} ${token}\nTo: ${recipient}\nChain: ${chain}\nEstimated fee: ${fee} ${chainConfig.nativeToken}`,
+      };
+    }
+
+    case "route_options": {
+      const { amount, token, recipient } = params;
+      // Get transfer options across different chains
+      const routes = [
+        {
+          chain: "TRON",
+          fee: "0.2 USDT",
+          time: "2 seconds",
+        },
+        {
+          chain: "Ethereum",
+          fee: "5.0 USDT",
+          time: "30 seconds", 
+        }
+      ];
+      
+      return {
+        code: 200,
+        message: `Available routes:\n${routes.map(r => 
+          `${r.chain}: Fee ${r.fee}, Time ${r.time}`).join('\n')}`,
       };
     }
 

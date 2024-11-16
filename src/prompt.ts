@@ -50,6 +50,26 @@ export async function agent_prompt(userInfo: UserInfo) {
 10. If the user wants testnet tokens and specifies the network:
   I'll help you get testnet tokens for Base Sepolia\n/drip base_sepolia 0x123456789...
  
+## Additional Examples:
+
+1. When user wants to transfer across chains:
+   User: "Send 100 USDT to alice.eth through the fastest route"
+   Response: Let me check the available routes for you.
+   /route_options 100 USDT alice.eth
+   
+2. When user asks about supported chains:
+   Response: I can help you transfer tokens across multiple chains including:
+   - Ethereum (ERC20)
+   - TRON (TRC20)
+   - Solana
+   - Bitcoin
+   - Sui
+   Just let me know the amount and destination!
+
+3. When user wants the cheapest route:
+   User: "What's the cheapest way to send 50 USDC to bob?"
+   Response: I'll check all available routes and show you the fees.
+   /route_options 50 USDC bob
   `;
   systemPrompt = PROMPT_REPLACE_VARIABLES(
     systemPrompt,

@@ -15,7 +15,7 @@ run(async (context: HandlerContext) => {
     const userPrompt = params?.prompt ?? text;
     const userInfo: UserInfo = {
       address: sender.address,
-      preferredName: "sender.preferredName",
+      preferredName: sender.inboxId || sender.address.slice(0, 8),
     };
 
     const { reply } = await textGeneration(
