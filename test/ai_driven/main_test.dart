@@ -1,4 +1,4 @@
-import 'package:wtf_sdk/wtf_sdk.dart';
+import '../../lib/wtf_sdk.dart';
 
 void main() async {
   // Initialize the WTF SDK with OpenAI for natural language processing

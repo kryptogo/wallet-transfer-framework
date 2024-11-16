@@ -3,18 +3,13 @@ description: Wallet Transfer Framework (WTF) - A Flutter SDK for blockchain paym
 version: 1.0.0
 
 environment:
-  sdk: ">=2.19.0 <4.0.0"
+  sdk: '>=2.19.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.1.0  # For making HTTP requests to blockchain APIs
-  web3dart: ^2.7.1  # For Ethereum blockchain interactions
-  tron: ^2.0.0  # For TRON blockchain interactions
-  solana: ^0.30.0  # For Solana blockchain interactions
-  sui: ^0.1.0  # For Sui blockchain interactions
-  bitcoin_flutter: ^2.0.3  # For Bitcoin blockchain interactions
-  kaspa: ^0.1.0  # For Kaspa blockchain interactions
+  http: ^1.1.0 # For making HTTP requests to blockchain APIs
+  dio:
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 import '../ai/ai_model.dart';
 import '../blockchain/blockchain.dart';
-import '../models/transfer_request.dart';
 import '../models/transfer_option.dart';
+import '../models/transfer_request.dart';
 import '../models/transfer_result.dart';
 
 /// Manages wallet operations by coordinating between AI and blockchain layers
@@ -43,15 +43,6 @@ class WalletOperations {
     } else {
       final connector = blockchain.getConnector(blockchain.type);
       options.addAll(await connector.getTransferOptions(request));
-    }
-
-    // Use AI to analyze and sort options by best value
-    if (options.isNotEmpty) {
-      final analysis = await aiModel.analyzeTransferOptions(
-        options.map((o) => o.toJson()).toList(),
-      );
-      // Sort options based on AI analysis
-      // TODO: Implement sorting logic based on AI recommendations
     }
 
     return options;
@@ -120,6 +111,6 @@ class WalletOperations {
 
   /// Generate user-friendly explanation of a transfer
   Future<String> explainTransfer(TransferResult result) async {
-    return aiModel.generateExplanation(result.toJson());
+    return aiModel.generateExplanation(result);
   }
 }

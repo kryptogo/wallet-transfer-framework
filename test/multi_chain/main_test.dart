@@ -1,4 +1,5 @@
-import 'package:wtf_sdk/wtf_sdk.dart';
+import '../../lib/src/models/transfer_request.dart';
+import '../../lib/wtf_sdk.dart';
 
 /// Example demonstrating multi-chain and cross-chain transfer capabilities
 void main() async {
