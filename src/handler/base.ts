@@ -24,10 +24,10 @@ function generateTxPayURL(params: {
   transactionType: 'send' | 'swap' | 'mint'
 }) {
   const queryParams = new URLSearchParams();
-  
+
   queryParams.append('transaction_type', params.transactionType);
   queryParams.append('buttonName', params.transactionType.charAt(0).toUpperCase() + params.transactionType.slice(1));
-  
+
   if (params.recipientAddress) {
     queryParams.append('receiver', params.recipientAddress);
   }
@@ -37,7 +37,7 @@ function generateTxPayURL(params: {
   if (params.tokenAddress) {
     queryParams.append('token', 'USDC');
   }
-  
+
   return `${TX_PAY_BASE_URL}?${queryParams.toString()}`;
 }
 
@@ -54,7 +54,7 @@ export async function handler(context: HandlerContext) {
   switch (skill) {
     case "balance": {
       const { token = "USDT", chain = "Ethereum" } = content.params;
-      
+
       // Validate chain support
       if (!chainConfigs[chain]) {
         await context.reply(`Chain ${chain} is not supported. Supported chains: ${Object.keys(chainConfigs).join(", ")}`);
@@ -74,30 +74,38 @@ ${balanceUrl}`);
     }
 
     case "transfer": {
-      const { amount, recipient, chain = "Ethereum" } = content.params;
-      
+      const { amount, recipientAddress, chain } = content.params;
+
+      console.log(content.params);
+
       // Validate chain support
       if (!chainConfigs[chain]) {
         await context.reply(`Chain ${chain} is not supported. Supported chains: ${Object.keys(chainConfigs).join(", ")}`);
         return;
       }
 
-      // Generate TxPay URL for transfer with updated parameters
-      const txUrl = generateTxPayURL({
-        recipientAddress: recipient,
-        tokenAddress: TOKEN_ADDRESSES[chain.toLowerCase() as keyof typeof TOKEN_ADDRESSES],
-        chainId: CHAIN_IDS[chain.toLowerCase() as keyof typeof CHAIN_IDS],
-        amount: Number(amount),
-        transactionType: 'send'
-      });
+      let chainId = chain.toLowerCase();
+      if (chainId === "tron") {
+        chainId = "TRON";
+      } else if (chainId === "ethereum") {
+        chainId = "eth";
+      } else if (chainId === "arbitrum") {
+        chainId = "arb";
+      } else {
+        chainId = chainId.toUpperCase();
+      }
+
+
+      const kgUrl = `https://kryptogo.page.link/send?to=${recipientAddress}&chainId=${chainId}&assetGroup=${TOKEN_ADDRESSES[chain.toLowerCase() as keyof typeof TOKEN_ADDRESSES]}&amount=${amount}`;
+
 
       await context.reply(`Transfer initiated:
-Amount: ${amount} USDC
-To: ${recipient}
-Chain: ${chain}
+        Amount: ${amount} USDC
+        To: ${recipientAddress}
+        Chain: ${chain}
 
-Click to proceed with transfer:
-${txUrl}`);
+        Click to proceed with transfer:
+        ${kgUrl}`);
       break;
     }
 

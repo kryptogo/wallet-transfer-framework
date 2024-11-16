@@ -1,6 +1,6 @@
+import type { SkillGroup } from "@xmtp/message-kit";
 import { handler as baseHandler } from "./handler/base.js";
 import { chainConfigs } from "./utils/chains.js";
-import type { SkillGroup } from "@xmtp/message-kit";
 
 export const skills: SkillGroup[] = [
   {
@@ -30,16 +30,18 @@ export const skills: SkillGroup[] = [
         }
       },
       {
-        skill: "/transfer [amount] [token] [recipient] [chain]",
+        skill: "/transfer [amount] [token] [recipientAddress] [chain]",
         examples: [
           "/transfer 100 USDT 0x123... TRON",
-          "/transfer 1 USDC vitalik.eth Ethereum"
+          "/transfer 1 USDC vitalik.eth Ethereum",
+          "/transfer 2 USDC to dorara.eth arb",
+          "/transfer 100 USDC to 0x123... TRON",
         ],
         handler: baseHandler,
-        description: "Transfer tokens across any supported blockchain",
+        description: "Transfer tokens to a recipient address on a specific chain",
         params: {
           amount: {
-            default: 10,
+            default: 1,
             type: "number"
           },
           token: {
@@ -47,9 +49,9 @@ export const skills: SkillGroup[] = [
             type: "string",
             values: ["USDT", "USDC"]
           },
-          recipient: {
-            default: "",
-            type: "string"
+          recipientAddress: {
+            default: "0x0a7a51B8887ca23B13d692eC8Cb1CCa4100eda4B",
+            type: "address"
           },
           chain: {
             default: "Ethereum",
