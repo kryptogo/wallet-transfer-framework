@@ -175,7 +175,6 @@ This project is licensed under the MIT License. See the [LICENSE](https://www.no
 ### 1. Add .env file to the root of the project
 ```
 OPENAI_API_KEY=your_openai_api_key
-CLAUDE_API_KEY=your_anthropic_api_key
 ```
 
 ### 2. Run the test
