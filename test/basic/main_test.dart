@@ -8,7 +8,7 @@ void main() async {
 
   test('test', () async {
     // read .env file for api key
-    final apiKey = dotenv.env['OPENAI_API_KEY'];
+    final apiKey = dotenv.env['OPEN_AI_API_KEY'];
 
     if (apiKey == null) {
       throw Exception("Add .env file and OPENAI_API_KEY");

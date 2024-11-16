@@ -38,22 +38,25 @@ class OpenAIModel implements AIModel {
           'functions': [
             {
               'name': 'create_transfer',
-              'description': '創建一個轉帳請求',
+              'description': 'Create a transfer request',
               'parameters': {
                 'type': 'object',
                 'properties': {
                   'senderAddress': {
                     'type': 'string',
-                    'description': '發送方的錢包地址'
+                    'description': 'Sender wallet address'
                   },
                   'recipientAddress': {
                     'type': 'string',
-                    'description': '接收方的錢包地址'
+                    'description': 'Recipient wallet address'
                   },
-                  'amount': {'type': 'number', 'description': '轉帳金額'},
+                  'amount': {
+                    'type': 'number',
+                    'description': 'Transfer amount'
+                  },
                   'tokenSymbol': {
                     'type': 'string',
-                    'description': '代幣符號，例如 ETH、USDT'
+                    'description': 'Token symbol, e.g. ETH, USDT'
                   }
                 },
                 'required': [
@@ -92,17 +95,17 @@ class OpenAIModel implements AIModel {
         data: {
           'model': model,
           'messages': [
-            {'role': 'system', 'content': '你是一個區塊鏈交易解釋助手，請用自然語言解釋這筆交易的細節。'},
+            {
+              'role': 'system',
+              'content':
+                  'You are a transaction assistant. Summarize this transaction in one simple sentence. Format: [sender short address] sent [amount] [token] to [recipient short address]'
+            },
             {
               'role': 'user',
               'content': '''
-請解釋這筆交易:
-- 發送方: ${transferDetails.details?['senderAddress']}
-- 接收方: ${transferDetails.details?['recipientAddress']}
-- 金額: ${transferDetails.details?['amount']} ${transferDetails.details?['tokenSymbol']}
-- 交易狀態: ${transferDetails.details?['status']}
-- 交易哈希: ${transferDetails.transactionHash}
-${transferDetails.details?['error'] != null ? '- 錯誤信息: ${transferDetails.details?['error']}' : ''}
+${transferDetails.details?['senderAddress']} sent ${transferDetails.details?['amount']} ${transferDetails.details?['tokenSymbol']} to ${transferDetails.details?['recipientAddress']}
+Status: ${transferDetails.details?['status']}
+${transferDetails.details?['error'] ?? ''}
 '''
             }
           ],
