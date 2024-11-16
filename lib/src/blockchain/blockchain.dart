@@ -27,53 +27,18 @@ abstract class BlockchainConnector {
 /// Main blockchain class that manages different blockchain connectors
 class Blockchain {
   final BlockchainType type;
-  final Map<BlockchainType, BlockchainConnector> _connectors = {};
+  final Map<BlockchainType, BlockchainConnector> connectors;
 
   Blockchain({
     required this.type,
-  }) {
-    _initializeConnectors();
-  }
-
-  void _initializeConnectors() {
-    switch (type) {
-      case BlockchainType.multiChain:
-        _connectors[BlockchainType.sui] = SuiConnector();
-        _connectors[BlockchainType.btc] = BTCConnector();
-        _connectors[BlockchainType.solana] = SolanaConnector();
-        _connectors[BlockchainType.kaspa] = KaspaConnector();
-        _connectors[BlockchainType.ethereum] = EthereumConnector();
-        _connectors[BlockchainType.tron] = TronConnector();
-        break;
-      default:
-        _connectors[type] = _createConnector(type);
-    }
-  }
-
-  BlockchainConnector _createConnector(BlockchainType type) {
-    switch (type) {
-      case BlockchainType.sui:
-        return SuiConnector();
-      case BlockchainType.btc:
-        return BTCConnector();
-      case BlockchainType.solana:
-        return SolanaConnector();
-      case BlockchainType.kaspa:
-        return KaspaConnector();
-      case BlockchainType.ethereum:
-        return EthereumConnector();
-      case BlockchainType.tron:
-        return TronConnector();
-      default:
-        throw UnimplementedError('Blockchain type $type not supported');
-    }
-  }
+    required this.connectors,
+  }) {}
 
   BlockchainConnector getConnector(BlockchainType type) {
-    if (_connectors[type] == null) {
+    if (connectors[type] == null) {
       throw StateError('Connector for $type not initialized');
     }
-    return _connectors[type]!;
+    return connectors[type]!;
   }
 }
 

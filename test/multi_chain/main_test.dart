@@ -1,4 +1,3 @@
-import '../../lib/src/models/transfer_request.dart';
 import '../../lib/wtf_sdk.dart';
 
 /// Example demonstrating multi-chain and cross-chain transfer capabilities
@@ -6,7 +5,14 @@ void main() async {
   // Initialize WTF SDK with multi-chain support
   final wtf = WTF(
     aiModel: OpenAIModel(apiKey: 'your-api-key'),
-    blockchain: Blockchain(type: BlockchainType.multiChain),
+    blockchain: Blockchain(type: BlockchainType.multiChain, connectors: {
+      BlockchainType.sui: SuiConnector(),
+      BlockchainType.btc: BTCConnector(),
+      BlockchainType.solana: SolanaConnector(),
+      BlockchainType.kaspa: KaspaConnector(),
+      BlockchainType.ethereum: EthereumConnector(),
+      BlockchainType.tron: TronConnector(),
+    }),
   );
 
   // Example addresses for different chains

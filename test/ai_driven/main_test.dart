@@ -4,7 +4,12 @@ void main() async {
   // Initialize the WTF SDK with OpenAI for natural language processing
   final wtf = WTF(
     aiModel: OpenAIModel(apiKey: 'your-api-key'),
-    blockchain: Blockchain(type: BlockchainType.multiChain),
+    blockchain: Blockchain(type: BlockchainType.multiChain, connectors: {  BlockchainType.sui: SuiConnector(),
+        BlockchainType.btc: BTCConnector(),
+        BlockchainType.solana: SolanaConnector(),
+        BlockchainType.kaspa: KaspaConnector(),
+        BlockchainType.ethereum: EthereumConnector(),
+        BlockchainType.tron: TronConnector(),}),
   );
 
   // Example natural language commands

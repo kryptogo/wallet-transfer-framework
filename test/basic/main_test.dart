@@ -10,10 +10,21 @@ void main() async {
     // read .env file for api key
     final apiKey = dotenv.env['OPENAI_API_KEY'];
 
+    if (apiKey == null) {
+      throw Exception("Add .env file and OPENAI_API_KEY");
+    }
+
     // Initialize the WTF SDK with OpenAI for natural language processing
     final wtf = WTF(
-      aiModel: OpenAIModel(apiKey: ''),
-      blockchain: Blockchain(type: BlockchainType.ethereum),
+      aiModel: OpenAIModel(apiKey: apiKey),
+      blockchain: Blockchain(type: BlockchainType.ethereum, connectors: {
+        BlockchainType.sui: SuiConnector(),
+        BlockchainType.btc: BTCConnector(),
+        BlockchainType.solana: SolanaConnector(),
+        BlockchainType.kaspa: KaspaConnector(),
+        BlockchainType.ethereum: EthereumConnector(),
+        BlockchainType.tron: TronConnector(),
+      }),
     );
 
     expect(wtf, isNotNull);
