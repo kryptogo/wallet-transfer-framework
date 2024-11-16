@@ -16,13 +16,13 @@ The **Universal Transfer Operations (UTO)** define a standard interface for exec
 
 The following **basic operations** are defined by UTO and form the core of WTF's wallet interaction logic:
 
-| Operation | Description |
-| --- | --- |
-| `create_transfer` | Initializes a transfer request with required parameters. |
-| `validate_transfer` | Validates the transfer details (e.g., balances, compatibility). |
-| `get_transfer_options` | Provides route options (e.g., chains, tokens, fees, speed). |
-| `execute_transfer` | Executes the transfer using the chosen route and parameters. |
-| `confirm_transfer` | Confirms the transfer was successfully completed. |
+| Operation              | Description                                                     |
+| ---------------------- | --------------------------------------------------------------- |
+| `create_transfer`      | Initializes a transfer request with required parameters.        |
+| `validate_transfer`    | Validates the transfer details (e.g., balances, compatibility). |
+| `get_transfer_options` | Provides route options (e.g., chains, tokens, fees, speed).     |
+| `execute_transfer`     | Executes the transfer using the chosen route and parameters.    |
+| `confirm_transfer`     | Confirms the transfer was successfully completed.               |
 
 ---
 
@@ -168,3 +168,18 @@ Contributions are welcome! Please follow the [Contributing Guidelines](https://w
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://www.notion.so/kryptogo/LICENSE) file for details.
+
+
+# How to run basic test
+
+### 1. Add .env file to the root of the project
+```
+OPENAI_API_KEY=your_openai_api_key
+CLAUDE_API_KEY=your_anthropic_api_key
+```
+
+### 2. Run the test
+```bash
+flutter pub get
+flutter test test/basic/main_test.dart
+```
