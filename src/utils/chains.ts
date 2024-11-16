@@ -6,12 +6,6 @@ export interface ChainConfig {
 }
 
 export const chainConfigs: Record<string, ChainConfig> = {
-  TRON: {
-    name: 'TRON',
-    supportedTokens: ['USDT'],
-    estimateFee: async () => 0.2,
-    validateAddress: (address: string) => address.startsWith('T')
-  },
   Ethereum: {
     name: 'Ethereum',
     supportedTokens: ['USDT', 'USDC'],

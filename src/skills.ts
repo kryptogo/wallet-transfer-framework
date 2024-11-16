@@ -1,12 +1,12 @@
-import type { SkillGroup } from "@xmtp/message-kit";
 import { handler as baseHandler } from "./handler/base.js";
 import { chainConfigs } from "./utils/chains.js";
- 
+import type { SkillGroup } from "@xmtp/message-kit";
+
 export const skills: SkillGroup[] = [
   {
-    name: "Stablecoin Transfer",
+    name: "Stablecoin Operations",
     tag: "@wtf",
-    description: "Cross-chain stablecoin transfers",
+    description: "Cross-chain stablecoin operations",
     skills: [
       {
         skill: "/balance [token] [chain]",
@@ -18,12 +18,12 @@ export const skills: SkillGroup[] = [
         description: "Check token balance on specific chain",
         params: {
           token: {
-            default: "USDT",
+            default: "USDC",
             type: "string",
-            values: ["USDT", "USDC"]
+            values: ["USDC"]
           },
           chain: {
-            default: "Ethereum",
+            default: "Base",
             type: "string",
             values: Object.keys(chainConfigs)
           }
@@ -32,11 +32,11 @@ export const skills: SkillGroup[] = [
       {
         skill: "/transfer [amount] [token] [recipient] [chain]",
         examples: [
-          "/transfer 100 USDT alice.eth TRON",
-          "/transfer 50 USDC bob.eth Ethereum"
+          "/transfer 100 USDT 0x123... TRON",
+          "/transfer 1 USDC vitalik.eth Ethereum"
         ],
         handler: baseHandler,
-        description: "Transfer stablecoins across chains",
+        description: "Transfer tokens across any supported blockchain",
         params: {
           amount: {
             default: 10,
@@ -45,7 +45,7 @@ export const skills: SkillGroup[] = [
           token: {
             default: "USDT",
             type: "string",
-            values: ["USDT", "USDC"] // 支援的穩定幣
+            values: ["USDT", "USDC"]
           },
           recipient: {
             default: "",
@@ -54,7 +54,7 @@ export const skills: SkillGroup[] = [
           chain: {
             default: "Ethereum",
             type: "string",
-            values: ["Ethereum", "TRON", "Base"] // 支援的鏈
+            values: Object.keys(chainConfigs)
           }
         }
       }

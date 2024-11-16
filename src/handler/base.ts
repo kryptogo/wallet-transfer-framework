@@ -1,120 +1,108 @@
-import { HandlerContext, SkillResponse } from "@xmtp/message-kit";
+import { HandlerContext } from "@xmtp/message-kit";
 import { chainConfigs } from "../utils/chains.js";
 
-const baseUrl = "https://base-frame-lyart.vercel.app/transaction";
+// Base URL for the TxPay frame
+const TX_PAY_BASE_URL = "https://base-tx-frame.vercel.app/transaction/";
 
-// Helper function to generate transaction URL
-function generateFrameURL(
-  transaction_type: string,
-  params: { [key: string]: string | number | undefined },
-) {
-  // Filter out undefined parameters
-  const filteredParams: { [key: string]: string | number } = {};
-  for (const key in params) {
-    if (params[key] !== undefined) {
-      filteredParams[key] = params[key] as string | number;
-    }
+// Default token addresses for supported chains
+const TOKEN_ADDRESSES = {
+  "ethereum": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC on Ethereum
+  "base": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913", // USDC on Base
+};
+
+// Chain IDs mapping 
+const CHAIN_IDS = {
+  "ethereum": 1,
+  "base": 8453,
+};
+
+function generateTxPayURL(params: {
+  recipientAddress?: string,
+  tokenAddress?: string,
+  chainId?: number,
+  amount?: number,
+  transactionType: 'send' | 'swap' | 'mint'
+}) {
+  const queryParams = new URLSearchParams();
+  
+  queryParams.append('transaction_type', params.transactionType);
+  queryParams.append('buttonName', params.transactionType.charAt(0).toUpperCase() + params.transactionType.slice(1));
+  
+  if (params.recipientAddress) {
+    queryParams.append('receiver', params.recipientAddress);
+  }
+  if (params.amount) {
+    queryParams.append('amount', params.amount.toString());
+  }
+  if (params.tokenAddress) {
+    queryParams.append('token', 'USDC');
   }
   
-  const queryParams = new URLSearchParams({
-    transaction_type,
-    ...filteredParams,
-  }).toString();
-  
-  return `${baseUrl}?${queryParams}`;
+  return `${TX_PAY_BASE_URL}?${queryParams.toString()}`;
 }
 
-export const handler = async (context: HandlerContext): Promise<SkillResponse> => {
+export async function handler(context: HandlerContext) {
   const {
     message: {
-      content: { skill, params },
+      content,
       sender,
     },
   } = context;
 
+  const skill = content.skill;
+
   switch (skill) {
-    case "/balance": {
-      const { token, chain } = params;
+    case "balance": {
+      const { token = "USDT", chain = "Ethereum" } = content.params;
       
-      // 1. 驗證參數
-      const chainConfig = chainConfigs[chain];
-      if (!chainConfig?.supportedTokens.includes(token)) {
-        return {
-          code: 400,
-          message: `${token} is not supported on ${chain}`,
-        };
+      // Validate chain support
+      if (!chainConfigs[chain]) {
+        await context.reply(`Chain ${chain} is not supported. Supported chains: ${Object.keys(chainConfigs).join(", ")}`);
+        return;
       }
 
-      // 2. 生成查詢餘額的 URL
-      const url = generateFrameURL("balance", {
-        token,
-        chain,
-        address: sender.address
+      // Generate balance check URL using TxPay
+      const balanceUrl = generateTxPayURL({
+        tokenAddress: TOKEN_ADDRESSES[chain.toLowerCase() as keyof typeof TOKEN_ADDRESSES],
+        chainId: CHAIN_IDS[chain.toLowerCase() as keyof typeof CHAIN_IDS],
+        transactionType: 'send'
       });
 
-      return {
-        code: 200,
-        message: `Checking balance:
-Token: ${token}
-Chain: ${chain}
-Address: ${sender.address}
-
-View balance:
-${url}`
-      };
+      await context.reply(`Check your ${token} balance on ${chain}:
+${balanceUrl}`);
+      break;
     }
 
-    case "/transfer": {
-      const { amount, token, recipient, chain } = params;
+    case "transfer": {
+      const { amount, recipient, chain = "Ethereum" } = content.params;
       
-      // 1. 驗證參數
-      const chainConfig = chainConfigs[chain];
-      if (!chainConfig?.supportedTokens.includes(token)) {
-        return {
-          code: 400,
-          message: `${token} is not supported on ${chain}`,
-        };
+      // Validate chain support
+      if (!chainConfigs[chain]) {
+        await context.reply(`Chain ${chain} is not supported. Supported chains: ${Object.keys(chainConfigs).join(", ")}`);
+        return;
       }
 
-      // 2. 檢查發送者餘額
-      const balanceUrl = generateFrameURL("balance", {
-        token,
-        chain,
-        address: sender.address
+      // Generate TxPay URL for transfer with updated parameters
+      const txUrl = generateTxPayURL({
+        recipientAddress: recipient,
+        tokenAddress: TOKEN_ADDRESSES[chain.toLowerCase() as keyof typeof TOKEN_ADDRESSES],
+        chainId: CHAIN_IDS[chain.toLowerCase() as keyof typeof CHAIN_IDS],
+        amount: Number(amount),
+        transactionType: 'send'
       });
 
-      // 3. 估算費用
-      const fee = await chainConfig.estimateFee();
-      
-      // 4. 生成交易 URL
-      const transferUrl = generateFrameURL("transfer", {
-        amount,
-        token,
-        recipient,
-        chain,
-        fee
-      });
-
-      return {
-        code: 200,
-        message: `Transfer initiated:
-Amount: ${amount} ${token}
+      await context.reply(`Transfer initiated:
+Amount: ${amount} USDC
 To: ${recipient}
 Chain: ${chain}
-Estimated fee: $${fee}
 
-Check your balance first:
-${balanceUrl}
-
-Then click to confirm transfer:
-${transferUrl}`
-      };
+Click to proceed with transfer:
+${txUrl}`);
+      break;
     }
 
     default:
-      return {
-        code: 400,
-        message: "Unsupported skill"
-      };
+      await context.reply("Unknown command. Available commands: balance, transfer");
+      break;
   }
-};
+}
