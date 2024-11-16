@@ -17,5 +17,12 @@ export const chainConfigs: Record<string, ChainConfig> = {
     supportedTokens: ['USDC'],
     estimateFee: async () => 0.1,
     validateAddress: (address: string) => address.startsWith('0x')
-  }
+  },
+  Arbitrum: {
+    name: 'Arbitrum',
+    supportedTokens: ['USDC'],
+    estimateFee: async () => 0.1,
+    validateAddress: (address: string) => address.startsWith('0x')
+  },
+
 }; 

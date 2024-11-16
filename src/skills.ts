@@ -34,8 +34,9 @@ export const skills: SkillGroup[] = [
         examples: [
           "/transfer 100 USDT 0x123... TRON",
           "/transfer 1 USDC vitalik.eth Ethereum",
-          "/transfer 2 USDC to dorara.eth arb",
+          "/transfer 2 USDC to dorara.eth Arbitrum",
           "/transfer 100 USDC to 0x123... TRON",
+          "/transfer 100 USDC to 0x123... Base",
         ],
         handler: baseHandler,
         description: "Transfer tokens to a recipient address on a specific chain",
@@ -54,9 +55,9 @@ export const skills: SkillGroup[] = [
             type: "address"
           },
           chain: {
-            default: "Ethereum",
+            default: "Arbitrum",
             type: "string",
-            values: Object.keys(chainConfigs)
+            values: ["Ethereum", "Base", "Arbitrum", "Tron"]
           }
         }
       }
