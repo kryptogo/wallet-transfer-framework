@@ -2,19 +2,22 @@ import 'dart:math' show pi, sin;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wallet_example/widgets/cute_button.dart';
+import 'package:wtf_sdk/wtf_sdk.dart';
 
 // Add this enum at the top level
 enum NounceEmotion {
   balance,
-  thinking,
+  loading,
   happy,
   sad,
 }
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
@@ -47,6 +50,27 @@ class _MyHomePageState extends State<MyHomePage> {
   NounceEmotion _currentEmotion = NounceEmotion.balance;
   Widget? bubbleWidget;
   final _textController = TextEditingController();
+  late WTF wtf;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentEmotion = NounceEmotion.balance;
+    final apiKey = dotenv.env['OPENAI_API_KEY'];
+
+    // Initialize the WTF SDK with OpenAI for natural language processing
+    wtf = WTF(
+      aiModel: OpenAIModel(apiKey: apiKey!),
+      blockchain: Blockchain(type: BlockchainType.ethereum, connectors: {
+        BlockchainType.sui: SuiConnector(),
+        BlockchainType.btc: BTCConnector(),
+        BlockchainType.solana: SolanaConnector(),
+        BlockchainType.kaspa: KaspaConnector(),
+        BlockchainType.ethereum: EthereumConnector(),
+        BlockchainType.tron: TronConnector(),
+      }),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +106,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: CuteButton(
                       borderRadius: 12,
-                      onPressed: () =>
-                          setState(() => _currentEmotion = emotion),
+                      onPressed: () {
+                        setState(() {
+                          _currentEmotion = emotion;
+                          bubbleWidget = null;
+                        });
+                      },
                       label: (emotion.name.toUpperCase()),
                     ),
                   ),
@@ -141,10 +169,108 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.send_rounded, color: Colors.white),
-                      onPressed: () {
-                        // TODO: 處理發送邏輯
+                      onPressed: () async {
                         print(_textController.text);
+                        final command = _textController.text;
                         _textController.clear();
+                        setState(() {
+                          _currentEmotion = NounceEmotion.loading;
+                          bubbleWidget = Text(
+                            '🤖 Parsing...',
+                            style: GoogleFonts.londrinaSolid(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              height: 1,
+                            ),
+                          );
+                        });
+
+                        final request = await wtf.walletOperations
+                            .processTransferCommand(command);
+                        print('🤖 AI Parsed: ${request.toJson()}');
+
+                        setState(() {
+                          _currentEmotion = NounceEmotion.happy;
+                          bubbleWidget = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'To: ${request.recipientAddress.substring(0, 4)}...${request.recipientAddress.substring(request.recipientAddress.length - 4)}',
+                                style: GoogleFonts.londrinaSolid(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1,
+                                ),
+                              ),
+                              Text(
+                                'Amount: ${request.amount} ${request.tokenSymbol}',
+                                style: GoogleFonts.londrinaSolid(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  CuteButton(
+                                    borderRadius: 12,
+                                    onPressed: () {
+                                      setState(() {
+                                        bubbleWidget = null;
+                                        _currentEmotion = NounceEmotion.balance;
+                                      });
+                                    },
+                                    label: 'Cancel',
+                                    backgroundColor: Colors.grey[300],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  CuteButton(
+                                    borderRadius: 12,
+                                    onPressed: () async {
+                                      setState(() {
+                                        bubbleWidget = Text(
+                                          '🤖 Parsing...',
+                                          style: GoogleFonts.londrinaSolid(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w800,
+                                            height: 1,
+                                          ),
+                                        );
+                                        _currentEmotion = NounceEmotion.loading;
+                                        // Get AI-generated explanation of the transfer
+                                      });
+                                      final explanation = await wtf
+                                          .walletOperations
+                                          .explainTransfer(
+                                        TransferResult(
+                                          success: true,
+                                          transactionHash:
+                                              '0x902817fd0ae0f97b91315af257e1e7036437af4bd46dab32b795c4f9090c1299',
+                                          details: {
+                                            'tokenSymbol': request.tokenSymbol,
+                                            'amount': request.amount,
+                                            'senderAddress':
+                                                '0x0a7a51B8887ca23B13d692eC8Cb1CCa4100eda4B',
+                                            'recipientAddress':
+                                                request.recipientAddress,
+                                          },
+                                        ),
+                                      );
+
+                                      setState(() {
+                                        _currentEmotion = NounceEmotion.balance;
+                                        bubbleWidget = Text(explanation);
+                                      });
+                                    },
+                                    backgroundColor: Colors.green,
+                                    label: 'Confirm',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        });
                       },
                     ),
                   ),
@@ -183,53 +309,23 @@ class _NounceManState extends State<NounceMan> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        if (widget.bubbleWidget != null)
-          Positioned(
-            bottom: 120,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: widget.bubbleWidget,
-                ),
-                Positioned(
-                  bottom: -7,
-                  left: 20,
-                  child: CustomPaint(
-                    size: const Size(16, 8),
-                    painter: BubbleTailPainter(),
-                  ),
-                ),
-              ],
+        Center(
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: switch (widget.emotion) {
+                NounceEmotion.balance =>
+                  const Color.fromARGB(255, 255, 202, 95),
+                NounceEmotion.loading => Colors.blue[200],
+                NounceEmotion.happy => Colors.green[200],
+                NounceEmotion.sad => Colors.grey[300],
+              },
+              shape: BoxShape.circle,
             ),
           ),
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: switch (widget.emotion) {
-              NounceEmotion.balance => const Color.fromARGB(255, 255, 202, 95),
-              NounceEmotion.thinking => Colors.blue[200],
-              NounceEmotion.happy => Colors.green[200],
-              NounceEmotion.sad => Colors.grey[300],
-            },
-            shape: BoxShape.circle,
-          ),
         ),
-        Positioned.fill(
+        Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Transform.translate(
@@ -254,7 +350,7 @@ class _NounceManState extends State<NounceMan> {
                       offset: Offset(0, value * 4),
                       child: child,
                     );
-                  case NounceEmotion.thinking:
+                  case NounceEmotion.loading:
                     // Tilt side to side
                     return Transform.rotate(
                       angle: sin(value * pi * 2) * 0.1,
@@ -281,6 +377,47 @@ class _NounceManState extends State<NounceMan> {
                 }
               },
             ),
+        if (widget.bubbleWidget != null)
+          Positioned.fill(
+            child: Transform.translate(
+              offset: const Offset(0, -120),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: widget.bubbleWidget,
+                      ),
+                      Positioned(
+                        bottom: -7,
+                        left: 180,
+                        child: CustomPaint(
+                          size: const Size(16, 8),
+                          painter: BubbleTailPainter(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

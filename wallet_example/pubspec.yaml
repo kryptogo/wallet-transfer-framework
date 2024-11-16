@@ -37,6 +37,10 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_animate: ^4.5.0
   flutter_svg:
+  flutter_dotenv:
+
+  wtf_sdk:
+    path: ../
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +62,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
   assets:
+    - .env
     - assets/
     - assets/Noggles.svg
 
