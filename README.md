@@ -41,7 +41,7 @@ The primary goal of WTF is to provide a natural, user-friendly interface for man
    - Example: "Send 100 USDC to Alice" → `/transfer 100 USDC alice.eth Base`
 
 2. **Cross-Chain Interoperability**:
-   - Supports Base and Ethereum networks, enabling seamless transfers of stablecoins like USDC.
+   - Supports Base and Arbitrum networks, enabling seamless transfers of stablecoins like USDC.
    - Unified abstraction for multi-chain operations.
 
 3. **Optimized Execution**:
@@ -113,7 +113,7 @@ The Flutter implementation of WTF leverages the SDK to enable seamless integrati
   - Clean separation between UI, business logic, and blockchain operations
 
 - **Rapid Scalability**: 
-  - Supports Base and Ethereum networks out of the box
+  - Supports Base and Arbitrum networks out of the box
   - Extensible architecture for adding new chains
   - Unified interface for multi-chain operations
 
@@ -227,8 +227,8 @@ This implementation uses the XMTP protocol for decentralized messaging combined 
   - Supports both direct commands and natural language inputs
   
 - **Cross-Chain Support**:
-  - Facilitates USDC transfers on Ethereum (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)
-  - Supports Base network (0x833589fcd6edb6e08f4c7c32d4f71b54bda02913)
+  - Facilitates USDC transfers on Arbitrum (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48)
+  - Supports Base and Arbitrum network (0x833589fcd6edb6e08f4c7c32d4f71b54bda02913)
   - Smart routing based on gas fees and confirmation times
   
 - **User-Friendly Interface**:
