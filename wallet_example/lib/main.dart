@@ -9,7 +9,7 @@ import 'package:wallet_example/widgets/cute_button.dart';
 import 'package:wtf_sdk/wtf_sdk.dart';
 
 // Add this enum at the top level
-enum NounceEmotion {
+enum NounsEmotion {
   balance,
   loading,
   happy,
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.grey[200], // or any color you want
       ),
@@ -47,7 +48,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  NounceEmotion _currentEmotion = NounceEmotion.balance;
+  NounsEmotion _currentEmotion = NounsEmotion.balance;
   Widget? bubbleWidget;
   final _textController = TextEditingController();
   late WTF wtf;
@@ -55,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _currentEmotion = NounceEmotion.balance;
+    _currentEmotion = NounsEmotion.balance;
     final apiKey = dotenv.env['OPENAI_API_KEY'];
 
     // Initialize the WTF SDK with OpenAI for natural language processing
@@ -93,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: Center(
-                child: NounceMan(
+                child: NounsMan(
                     emotion: _currentEmotion, bubbleWidget: bubbleWidget),
               ),
             ),
@@ -101,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (final emotion in NounceEmotion.values)
+                for (final emotion in NounsEmotion.values)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: CuteButton(
@@ -174,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         final command = _textController.text;
                         _textController.clear();
                         setState(() {
-                          _currentEmotion = NounceEmotion.loading;
+                          _currentEmotion = NounsEmotion.loading;
                           bubbleWidget = Text(
                             '🤖 Parsing...',
                             style: GoogleFonts.londrinaSolid(
@@ -190,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         print('🤖 AI Parsed: ${request.toJson()}');
 
                         setState(() {
-                          _currentEmotion = NounceEmotion.happy;
+                          _currentEmotion = NounsEmotion.happy;
                           bubbleWidget = Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -218,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onPressed: () {
                                       setState(() {
                                         bubbleWidget = null;
-                                        _currentEmotion = NounceEmotion.balance;
+                                        _currentEmotion = NounsEmotion.balance;
                                       });
                                     },
                                     label: 'Cancel',
@@ -237,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             height: 1,
                                           ),
                                         );
-                                        _currentEmotion = NounceEmotion.loading;
+                                        _currentEmotion = NounsEmotion.loading;
                                         // Get AI-generated explanation of the transfer
                                       });
                                       final explanation = await wtf
@@ -259,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       );
 
                                       setState(() {
-                                        _currentEmotion = NounceEmotion.balance;
+                                        _currentEmotion = NounsEmotion.balance;
                                         bubbleWidget = Text(explanation);
                                       });
                                     },
@@ -290,20 +291,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class NounceMan extends StatefulWidget {
-  const NounceMan({
+class NounsMan extends StatefulWidget {
+  const NounsMan({
     super.key,
-    this.emotion = NounceEmotion.balance, // default to idle,
+    this.emotion = NounsEmotion.balance, // default to idle,
     required this.bubbleWidget,
   });
   final Widget? bubbleWidget;
-  final NounceEmotion emotion;
+  final NounsEmotion emotion;
 
   @override
-  State<NounceMan> createState() => _NounceManState();
+  State<NounsMan> createState() => _NounsManState();
 }
 
-class _NounceManState extends State<NounceMan> {
+class _NounsManState extends State<NounsMan> {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -315,11 +316,10 @@ class _NounceManState extends State<NounceMan> {
             height: 100,
             decoration: BoxDecoration(
               color: switch (widget.emotion) {
-                NounceEmotion.balance =>
-                  const Color.fromARGB(255, 255, 202, 95),
-                NounceEmotion.loading => Colors.blue[200],
-                NounceEmotion.happy => Colors.green[200],
-                NounceEmotion.sad => Colors.grey[300],
+                NounsEmotion.balance => const Color.fromARGB(255, 255, 202, 95),
+                NounsEmotion.loading => Colors.blue[200],
+                NounsEmotion.happy => Colors.green[200],
+                NounsEmotion.sad => Colors.grey[300],
               },
               shape: BoxShape.circle,
             ),
@@ -344,19 +344,19 @@ class _NounceManState extends State<NounceMan> {
               duration: const Duration(milliseconds: 600),
               builder: (context, value, child) {
                 switch (widget.emotion) {
-                  case NounceEmotion.balance:
+                  case NounsEmotion.balance:
                     // Gentle bounce
                     return Transform.translate(
                       offset: Offset(0, value * 4),
                       child: child,
                     );
-                  case NounceEmotion.loading:
+                  case NounsEmotion.loading:
                     // Tilt side to side
                     return Transform.rotate(
                       angle: sin(value * pi * 2) * 0.1,
                       child: child,
                     );
-                  case NounceEmotion.happy:
+                  case NounsEmotion.happy:
                     // Bounce and spin slightly
                     return Transform.translate(
                       offset: Offset(0, sin(value * pi * 2) * 6),
@@ -365,7 +365,7 @@ class _NounceManState extends State<NounceMan> {
                         child: child,
                       ),
                     );
-                  case NounceEmotion.sad:
+                  case NounsEmotion.sad:
                     // Slow, subtle droop
                     return Transform.translate(
                       offset: Offset(0, sin(value * pi) * 2),
