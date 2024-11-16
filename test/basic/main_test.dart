@@ -1,9 +1,15 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:test/test.dart';
 
 import '../../lib/wtf_sdk.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
+
   test('test', () async {
+    // read .env file for api key
+    final apiKey = dotenv.env['OPENAI_API_KEY'];
+
     // Initialize the WTF SDK with OpenAI for natural language processing
     final wtf = WTF(
       aiModel: OpenAIModel(apiKey: ''),
