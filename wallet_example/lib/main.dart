@@ -14,6 +14,8 @@ enum NounsEmotion {
   loading,
   happy,
   sad,
+  coin,
+  avatar,
 }
 
 void main() async {
@@ -50,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   NounsEmotion _currentEmotion = NounsEmotion.balance;
   Widget? bubbleWidget;
+  Widget? contentWidget;
   final _textController = TextEditingController();
   late WTF wtf;
 
@@ -78,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             const SizedBox(height: 12),
             Text(
@@ -95,12 +99,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: Center(
                 child: NounsMan(
-                    emotion: _currentEmotion, bubbleWidget: bubbleWidget),
+                    contentWidget: contentWidget,
+                    emotion: _currentEmotion,
+                    bubbleWidget: bubbleWidget),
               ),
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
               children: [
                 for (final emotion in NounsEmotion.values)
                   Padding(
@@ -111,6 +116,33 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           _currentEmotion = emotion;
                           bubbleWidget = null;
+                          contentWidget = null;
+                          if (emotion == NounsEmotion.coin) {
+                            bubbleWidget = Text(
+                              "100 USDC",
+                              style: GoogleFonts.londrinaSolid(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                height: 1,
+                              ),
+                            );
+                            contentWidget = Image.network(
+                              'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                            );
+                          }
+                          if (emotion == NounsEmotion.avatar) {
+                            bubbleWidget = Text(
+                              "Chaos ~",
+                              style: GoogleFonts.londrinaSolid(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                height: 1,
+                              ),
+                            );
+                            contentWidget = Image.asset(
+                              'assets/avatar.png',
+                            );
+                          }
                         });
                       },
                       label: (emotion.name.toUpperCase()),
@@ -172,6 +204,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: const Icon(Icons.send_rounded, color: Colors.white),
                       onPressed: () async {
                         print(_textController.text);
+                        setState(() {
+                          contentWidget = null;
+                          bubbleWidget = null;
+                        });
                         final command = _textController.text;
                         _textController.clear();
                         setState(() {
@@ -191,7 +227,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         print('🤖 AI Parsed: ${request.toJson()}');
 
                         setState(() {
-                          _currentEmotion = NounsEmotion.happy;
+                          _currentEmotion = NounsEmotion.coin;
+                          contentWidget = Image.network(
+                            'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+                          );
                           bubbleWidget = Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -219,6 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onPressed: () {
                                       setState(() {
                                         bubbleWidget = null;
+                                        contentWidget = null;
                                         _currentEmotion = NounsEmotion.balance;
                                       });
                                     },
@@ -239,6 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                         );
                                         _currentEmotion = NounsEmotion.loading;
+                                        contentWidget = null;
                                         // Get AI-generated explanation of the transfer
                                       });
                                       final explanation = await wtf
@@ -296,8 +337,10 @@ class NounsMan extends StatefulWidget {
     super.key,
     this.emotion = NounsEmotion.balance, // default to idle,
     required this.bubbleWidget,
+    required this.contentWidget,
   });
   final Widget? bubbleWidget;
+  final Widget? contentWidget;
   final NounsEmotion emotion;
 
   @override
@@ -311,17 +354,23 @@ class _NounsManState extends State<NounsMan> {
       clipBehavior: Clip.none,
       children: [
         Center(
-          child: Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: switch (widget.emotion) {
-                NounsEmotion.balance => const Color.fromARGB(255, 255, 202, 95),
-                NounsEmotion.loading => Colors.blue[200],
-                NounsEmotion.happy => Colors.green[200],
-                NounsEmotion.sad => Colors.grey[300],
-              },
-              shape: BoxShape.circle,
+          child: ClipOval(
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: switch (widget.emotion) {
+                  NounsEmotion.balance =>
+                    const Color.fromARGB(255, 255, 202, 95),
+                  NounsEmotion.loading => Colors.blue[200],
+                  NounsEmotion.happy => Colors.green[200],
+                  NounsEmotion.sad => Colors.grey[300],
+                  NounsEmotion.coin => const Color.fromARGB(255, 255, 202, 95),
+                  NounsEmotion.avatar => Colors.grey[300],
+                },
+                shape: BoxShape.circle,
+              ),
+              child: widget.contentWidget,
             ),
           ),
         ),
@@ -344,6 +393,19 @@ class _NounsManState extends State<NounsMan> {
               duration: const Duration(milliseconds: 600),
               builder: (context, value, child) {
                 switch (widget.emotion) {
+                  case NounsEmotion.coin:
+                  case NounsEmotion.avatar:
+                    // Bounce and rotate with slower rotation
+                    return Transform.translate(
+                      offset: Offset(-10, value * 4 - 40),
+                      child: Transform.rotate(
+                        angle: -0.2, // 只旋轉半圈
+                        child: Transform.scale(
+                          scale: 0.8,
+                          child: child,
+                        ),
+                      ),
+                    );
                   case NounsEmotion.balance:
                     // Gentle bounce
                     return Transform.translate(
@@ -351,9 +413,8 @@ class _NounsManState extends State<NounsMan> {
                       child: child,
                     );
                   case NounsEmotion.loading:
-                    // Tilt side to side
                     return Transform.rotate(
-                      angle: sin(value * pi * 2) * 0.1,
+                      angle: sin(value * pi * 0.1),
                       child: child,
                     );
                   case NounsEmotion.happy:
@@ -367,11 +428,26 @@ class _NounsManState extends State<NounsMan> {
                     );
                   case NounsEmotion.sad:
                     // Slow, subtle droop
+                    if (value > 0.8) {
+                      return Transform.translate(
+                        offset: Offset(-value * 5 + 10, sin(value * pi) * 2),
+                        child: Transform.scale(
+                          scale: 0.6,
+                          child: Transform.rotate(
+                            angle: 0.1,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    }
                     return Transform.translate(
-                      offset: Offset(0, sin(value * pi) * 2),
-                      child: Transform.rotate(
-                        angle: 0.1,
-                        child: child,
+                      offset: Offset(10, sin(value * pi) * 2),
+                      child: Transform.scale(
+                        scale: 0.6,
+                        child: Transform.rotate(
+                          angle: 0.1,
+                          child: child,
+                        ),
                       ),
                     );
                 }
@@ -404,12 +480,13 @@ class _NounsManState extends State<NounsMan> {
                         ),
                         child: widget.bubbleWidget,
                       ),
-                      Positioned(
-                        bottom: -7,
-                        left: 180,
-                        child: CustomPaint(
-                          size: const Size(16, 8),
-                          painter: BubbleTailPainter(),
+                      Positioned.fill(
+                        bottom: -40,
+                        child: Center(
+                          child: CustomPaint(
+                            size: const Size(16, 8),
+                            painter: BubbleTailPainter(),
+                          ),
                         ),
                       ),
                     ],
