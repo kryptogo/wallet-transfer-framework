@@ -1,4 +1,22 @@
 # Wallet Translation Framework (WTF)
+
+## Table of Contents
+
+- [Purpose of WTF](#purpose-of-wtf)
+  - [High-Level Architecture](#high-level-architecture)
+- [Why Combine WTF with LLM?](#why-combine-wtf-with-llm)
+- [Importance of Universal Transfer Operations (UTO)](#importance-of-universal-transfer-operations-uto)
+  - [Key Features](#key-features)
+  - [UTO Core Operations](#uto-core-operations)
+- [Implementations of WTF](#implementations-of-wtf)
+  - [1. Flutter Implementation](#1-flutter-implementation)
+  - [2. XMTP and MessageKit Implementation](#2-xmtp-and-messagekit-implementation)
+  - [3. MomentX Integration](#3-momentx-integration)
+  - [4. NounsDAO Integration](#4-nounsdao-integration)
+- [Development Setup](#development-setup)
+- [Extensibility and Future Directions](#extensibility-and-future-directions)
+  - [Future Work](#future-work)
+
 The **Wallet Translation Framework (WTF)** is an innovative AI-driven platform that simplifies cryptocurrency transactions through natural language processing (NLP). By combining AI with Universal Transfer Operations (UTO) and seamless integration into blockchain wallets, WTF redefines how users interact with blockchain technology.
 ## Purpose of WTF
 
@@ -303,6 +321,71 @@ Here are screenshots demonstrating the MessageKit integration and user experienc
   <img src="assets/messagekit_demo1.jpg" width="33%" />
   <img src="assets/messagekit_demo2.jpg" width="33%" />
 </p>
+
+### 3. MomentX Integration
+
+#### Overview
+WTF demonstrates its versatility by being implemented on the **MomentX** platform, a leader in Metaverse as a Service (MaaS). MomentX enables creators, businesses, and brands to construct unique metaverse environments while integrating Web3, AI, Virtual Humans, and XR technologies.
+
+Here is the demo: https://chat.momentx.ai/publish/WTF%20Wallet-db6e5d838165d206
+
+#### Use Case: Enhancing AI Virtual Assistants with Blockchain Capabilities
+
+MomentX recently launched **Guide-X**, an AI Virtual Assistant designed to provide human-like conversational skills and 24/7 multilingual support. By integrating WTF, Guide-X now incorporates blockchain-enabled functionalities, such as:
+
+1. **Seamless Cryptocurrency Transactions**:
+   - Guide-X users can initiate natural language commands like, "Transfer 50 USDC to Alex," and WTF translates these into blockchain-compatible wallet operations.
+
+2. **Cross-Chain Payment Support**:
+   - WTF empowers Guide-X to facilitate payments on **Base** and **Arbitrum**, leveraging Layer 2 solutions for cost-effective and fast transactions.
+
+3. **Decentralized Identity Integration**:
+   - Through ENS and XMTP, Guide-X can handle secure identity verification and decentralized messaging, ensuring privacy and trust in user interactions.
+
+#### Why This Matters
+
+By incorporating WTF, MomentX extends the capabilities of Guide-X into Web3 and blockchain ecosystems, enabling businesses to:
+- Accept cryptocurrency payments directly within the metaverse
+- Utilize decentralized identity solutions for secure interactions
+- Provide users with a seamless, AI-driven payment experience that is multilingual and available around the clock
+
+#### Demo Videos and Screenshots
+
+Here are screenshots demonstrating the integration and user experience:
+
+![MomentX AI Demo](assets/momentxai_demo.png)
+
+### 4. NounsDAO Integration
+
+#### Overview
+WTF integrates seamlessly into a chatbot application built on the **NounsDAO** ecosystem, leveraging Nouns' community-owned art and decentralized governance model to create an engaging and functional user experience.
+
+#### Use Case: Nouns-Powered Chatbot with Blockchain Capabilities
+
+The Nouns chatbot app combines the playful, creative spirit of Nouns art with the technical capabilities of WTF to provide users with a unique Web3-enabled experience:
+
+1. **Nouns Art as UI Elements**:
+   - Nouns characters and assets are integral to the app's design, used as avatars for the chatbot, interactive icons for wallet operations, and visual branding throughout the interface
+   - Each transaction or query is accompanied by Nouns-themed animations, adding a delightful and engaging layer to the user experience
+
+2. **Blockchain-Enabled Functionality via WTF**:
+   - Users can initiate wallet operations through natural language commands like "Send 10 USDC to Bob," seamlessly processed by WTF
+   - WTF supports cross-chain payments on Base and Arbitrum, ensuring fast, gas-efficient transactions
+
+3. **Community Engagement**:
+   - The chatbot connects users to NounsDAO governance tools, allowing them to vote on proposals or allocate funds directly through intuitive commands
+   - Users can explore other Nouns projects via the chatbot, deepening community involvement
+
+#### Demo Videos and Screenshots
+
+Here are screenshots demonstrating the integration and user experience:
+
+<p float="left">
+  <video src="assets/noun_demo.mp4" width="100%" controls></video>
+</p>
+
+
+By combining Nouns art and governance with WTF's AI-powered wallet operations, this project showcases how Web3 technology can be made more accessible, creative, and community-driven.
 
 ### Development Setup
 
